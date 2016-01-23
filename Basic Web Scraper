@@ -1,0 +1,10 @@
+
+#Scraping data from the website "Movie Body Counts".
+
+import urllib
+pages = ["A","B","C","D","E","F"]
+for x in pages:
+    url = "http://www.moviebodycounts.com/movies-"+x
+    print len(urllib.urlopen(url).read())
+    # To print the data as needed, remove the comment tag below.
+    # print urllib.urlopen(url).read()
