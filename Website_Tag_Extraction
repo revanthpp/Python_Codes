@@ -1,0 +1,65 @@
+#Importing the required modules that I will be using in the program below.
+
+import urllib
+import re
+import sqlite3
+import collections
+
+# Assigning the website
+# Connecting to the database names CSE801
+# Creating a new table titled "sample" which will store the tags and count.
+# Using regular expression to find all the tags within the website.
+
+myurl = "http://ironmaiden.com/"
+conn = sqlite3.connect('CSE801.db')
+c = conn.cursor()
+c.execute('''CREATE TABLE sample (tag text UNIQUE, count int)''')
+thesite=urllib.urlopen(myurl).read()
+tags = re.findall('</.*?>', thesite)
+print len(tags)
+
+#Implementing the Misra-Gries Algorithm and printing the output.
+
+print "Contents of the result of Misra Gries Algorithm"
+print " "
+k=10
+f=dict()
+for item in tags:
+    if item in f:
+        f[item]=f[item]+1
+    else:
+        if len(f)>k-1:
+            keys=f.keys()
+            for currentKey in keys:
+                f[currentKey]=f[currentKey]-1
+                if f[currentKey]<=0:
+                    del f[currentKey]
+        else:
+            f[item]=1
+
+print f
+
+#Inserting all the extracted tags into the database along with displaying the frequency of the tag occurrence.
+
+print '*' * 100
+print " "
+
+d = collections.defaultdict(int)
+
+for x in tags:
+    d[x] += 1
+
+for x in sorted(d, key=d.get, reverse=True):
+    c.execute('''INSERT INTO sample VALUES('%s','%d')'''%(x,d[x]))
+
+print "Contents of the SQL Table"
+
+result = list(c.execute("SELECT * FROM sample"))
+
+for i in range(len(result)):
+    print " "
+    print result[i]
+    print " "
+
+conn.commit()
+conn.close()
