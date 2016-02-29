@@ -1,0 +1,22 @@
+from pandas import *
+from sklearn import tree
+from sklearn.cross_validation import train_test_split
+
+datafile=read_csv("data.csv",sep=',')
+train, test = train_test_split(datafile, train_size = 0.7)
+print len(train)
+print len(test)
+
+dc = tree.DecisionTreeClassifier()
+dctree = dc.fit(train[['A','B','C','D']],train['class'])
+
+sP=[]
+sT=[]
+for depth in [1,2,3,4,5,6,7,8,9,10,11,22,33,44,55]:
+    pointdc=tree.DecisionTreeClassifier(criterion='entropy',max_depth=depth)
+    pointdctree=pointdc.fit(train[['A','B','C','D']],train['class'])
+    sP.append(1.0-pointdctree.score(train[['A','B','C','D']],train['class']))
+    sT.append(1.0-pointdctree.score(test[['A','B','C','D']],test['class']))
+    
+plot([1,2,3,4,5,6,7,8,9,10,11,22,33,44,55],sP,'r')
+plot([1,2,3,4,5,6,7,8,9,10,11,22,33,44,55],sT,'b')
